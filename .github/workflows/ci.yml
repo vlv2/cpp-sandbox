@@ -72,21 +72,25 @@ jobs:
           ccache --max-size=2G --set-config=compression=true --set-config=compression_level=5
       
       - name: Configure cache
+        id: configure-cache
         uses: actions/cache@v3
         with:
           path: |
             ~/.ccache
             ~/.conan
           key: ubuntu-20.04-ccache
-          restore-keys: ubuntu-20.04-ccache
       
-      - name: Install and build dependencies
+      - name: Detect if conan profile is already configured
+        if: steps.configure-cache.outputs.cache-hit == 'false'
         run: |
           conan profile new default --detect
           conan profile update settings.compiler=gcc default
           conan profile update settings.compiler.version=9 default
           conan profile update settings.compiler.cppstd=17 default
           conan profile update settings.compiler.libcxx=libstdc++11 default
+
+      - name: Install and build dependencies
+        run: |
           mkdir -p build/conan && cd build/conan
           conan install ../.. --build=missing
 
