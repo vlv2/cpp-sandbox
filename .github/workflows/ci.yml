@@ -23,7 +23,7 @@ jobs:
           #   build: gcc-release
           #   build-type: RelWithDebInfo
             
-          - compiler: gcc-9.4.0
+          - compiler: gcc-9
             config: gcc-developer
             build: gcc-debug
             build-type: Debug
