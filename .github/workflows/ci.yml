@@ -33,10 +33,10 @@ jobs:
           #   build: gcc-debug_with_thread_sanitizer
           #   build-type: Debug
 
-          # - compiler: llvm-15
-          #   config: clang-production
-          #   build: clang-release
-          #   build-type: RelWithDebInfo
+          - compiler: llvm-15
+            config: clang-production
+            build: clang-release
+            build-type: RelWithDebInfo
 
           # - compiler: llvm-15
           #   config: clang-developer
