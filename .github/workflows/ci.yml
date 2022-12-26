@@ -1,0 +1,103 @@
+name: CI
+on:
+  pull_request:
+  release:
+    types: [published]
+  push:
+    tags:
+    branches:
+      - main
+      - develop
+
+jobs:
+  Test:
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+    runs-on: ubuntu-20.04
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - compiler: gcc-9.4
+            config: gcc-production
+            build: gcc-release
+            build-type: RelWithDebInfo
+            
+          - compiler: gcc-9.4
+            config: gcc-developer
+            build: gcc-debug
+            build-type: Debug
+
+          - compiler: gcc-9.4
+            config: gcc-developer_with_thread_sanitizer
+            build: gcc-debug_with_thread_sanitizer
+            build-type: Debug
+
+          - compiler: llvm-15
+            config: clang-production
+            build: clang-release
+            build-type: RelWithDebInfo
+
+          - compiler: llvm-15
+            config: clang-developer
+            build: clang-debug
+            build-type: Debug
+
+          - compiler: llvm-15
+            config: clang-developer_with_memory_sanitizer
+            build: clang-debug_with_memory_sanitizer
+            build-type: Debug
+
+          - compiler: llvm-15
+            config: clang-developer_with_thread_sanitizer
+            build: clang-debug_with_thread_sanitizer
+            build-type: Debug
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup environment
+        uses: aminya/setup-cpp@v1
+        with:
+          compiler: ${{ matrix.compiler }}
+          cmake: true
+          ninja: true
+          ccache: true
+          cppcheck: true
+          clang-tidy: true
+          conan: true
+      
+      - name: Configure ccache
+        run: |
+          ccache --max-size=2G --set-config=compression=true --set-config=compression_level=5
+      
+      - name: Configure cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.ccache
+            ~/.conan
+          key: ubuntu-20.04-ccache
+          restore-keys: ubuntu-20.04-ccache
+      
+      - name: Install and build dependencies
+        run: |
+          conan profile update settings.compiler=gcc default
+          conan profile update settings.compiler.version=9.4 default
+          conan profile update settings.compiler.cppstd=17 default
+          conan profile update settings.compiler.libcxx=libstdc++11 default
+          mkdir -p build/conan && cd build/conan
+          conan install ../.. --build=missing
+
+      - name: Configure cmake
+        run: |
+          cmake --preset=${{ matrix.config }}
+      
+      - name: Build
+        run: |
+          cmake --build --preset=${{ matrix.build }} -j ${{ env.nproc }} 
+      
+      - name: Test
+        working-directory: build/
+        run: |
+          ctest -C ${{ matrix.build-type }}
