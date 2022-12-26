@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-20.04
     
     strategy:
-      max-parallel: 1
+      max-parallel: 2
       fail-fast: false
       matrix:
         include:
@@ -34,7 +34,7 @@ jobs:
           #   build: gcc-debug_with_thread_sanitizer
           #   build-type: Debug
 
-          - compiler: llvm-15
+          - compiler: llvm-12
             config: clang-production
             build: clang-release
             build-type: RelWithDebInfo
@@ -65,7 +65,7 @@ jobs:
           ninja: true
           ccache: true
           cppcheck: true
-          clangtidy: true
+          clangtidy: 12
           conan: true
       
       - name: Configure ccache
