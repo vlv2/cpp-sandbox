@@ -18,37 +18,37 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # - compiler: gcc-9.4.0
-          #   config: gcc-production
-          #   build: gcc-release
-          #   build-type: RelWithDebInfo
-            
           - compiler: gcc-9
-            config: gcc-developer
-            build: gcc-debug
-            build-type: Debug
+            config: gcc-production
+            build: gcc-release
+            build-type: RelWithDebInfo
+            
+          # - compiler: gcc-9
+          #   config: gcc-developer
+          #   build: gcc-debug
+          #   build-type: Debug
 
-          # - compiler: gcc-9.4.0
+          # - compiler: gcc-9
           #   config: gcc-developer_with_thread_sanitizer
           #   build: gcc-debug_with_thread_sanitizer
           #   build-type: Debug
 
-          # - compiler: llvm-15.0.6
+          # - compiler: llvm-15
           #   config: clang-production
           #   build: clang-release
           #   build-type: RelWithDebInfo
 
-          # - compiler: llvm-15.0.6
+          # - compiler: llvm-15
           #   config: clang-developer
           #   build: clang-debug
           #   build-type: Debug
 
-          # - compiler: llvm-15.0.6
+          # - compiler: llvm-15
           #   config: clang-developer_with_memory_sanitizer
           #   build: clang-debug_with_memory_sanitizer
           #   build-type: Debug
 
-          # - compiler: llvm-15.0.6
+          # - compiler: llvm-15
           #   config: clang-developer_with_thread_sanitizer
           #   build: clang-debug_with_thread_sanitizer
           #   build-type: Debug
@@ -64,7 +64,7 @@ jobs:
           ninja: true
           ccache: true
           cppcheck: true
-          clang-tidy: true
+          clangtidy: true
           conan: true
       
       - name: Configure ccache
@@ -84,7 +84,7 @@ jobs:
         run: |
           conan profile new default --detect
           conan profile update settings.compiler=gcc default
-          conan profile update settings.compiler.version=9.4 default
+          conan profile update settings.compiler.version=9 default
           conan profile update settings.compiler.cppstd=17 default
           conan profile update settings.compiler.libcxx=libstdc++11 default
           mkdir -p build/conan && cd build/conan
@@ -96,7 +96,7 @@ jobs:
       
       - name: Build
         run: |
-          cmake --build --preset=${{ matrix.build }} -j ${{ env.nproc }} 
+          cmake --build --preset=${{ matrix.build }} -j $(nproc)
       
       - name: Test
         working-directory: build/
