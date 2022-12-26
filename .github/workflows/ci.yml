@@ -34,22 +34,22 @@ jobs:
           #   build: gcc-debug_with_thread_sanitizer
           #   build-type: Debug
 
-          - compiler: llvm-12
-            config: clang-production
-            build: clang-release
-            build-type: RelWithDebInfo
+          # - compiler: llvm-12
+          #   config: clang-production
+          #   build: clang-release
+          #   build-type: RelWithDebInfo
 
-          # - compiler: llvm-15
+          # - compiler: llvm-12
           #   config: clang-developer
           #   build: clang-debug
           #   build-type: Debug
 
-          # - compiler: llvm-15
+          # - compiler: llvm-12
           #   config: clang-developer_with_memory_sanitizer
           #   build: clang-debug_with_memory_sanitizer
           #   build-type: Debug
 
-          # - compiler: llvm-15
+          # - compiler: llvm-12
           #   config: clang-developer_with_thread_sanitizer
           #   build: clang-debug_with_thread_sanitizer
           #   build-type: Debug
