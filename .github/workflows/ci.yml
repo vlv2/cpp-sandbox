@@ -78,10 +78,10 @@ jobs:
           path: |
             ~/.ccache
             ~/.conan
-          key: ubuntu-20.04-ccache
+          key: ubuntu-20.04-cache
       
-      - name: Detect if conan profile is already configured
-        if: steps.configure-cache.outputs.cache-hit == 'false'
+      - name: Create conan profile if not exists
+        if: steps.configure-cache.outputs.cache-hit != 'true'
         run: |
           conan profile new default --detect
           conan profile update settings.compiler=gcc default
